@@ -29,13 +29,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip  # Upgrade pip
-          # Simple if-else for checking requirements.txt
-          if [ -f requirements.txt ]; then
-            echo "requirements.txt found, installing dependencies!"
-            pip install -r requirements.txt
-          else
-            echo "No requirements.txt file found, skipping dependency installation!"
-          fi
+        # Install dependencies if requirements.txt exists
+        if: ${{ exists('requirements.txt') }}
+        run: |
+          echo "requirements.txt found, installing dependencies!"
+          pip install -r requirements.txt
+
+      - name: Skip installation (if no requirements.txt)
+        if: ${{ !exists('requirements.txt') }}
+        run: |
+          echo "No requirements.txt file found, skipping dependency installation!"
 
       - name: Show Python version and OS
         run: |
@@ -44,6 +47,9 @@ jobs:
 
       - name: Run main.py
         run: |
+          echo "Running on ${{ matrix.os }}!"
+          python main.py  # Execute your main.py script
+|
           echo "Running on ${{ matrix.os }}!"
           python main.py  # Execute your main.py script
 
